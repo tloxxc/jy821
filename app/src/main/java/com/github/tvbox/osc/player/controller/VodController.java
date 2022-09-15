@@ -121,7 +121,7 @@ public class VodController extends BaseController {
 
     Handler myHandle;
     Runnable myRunnable;
-    int myHandleSeconds = 6000;//闲置多少毫秒秒关闭底栏  默认6秒
+    int myHandleSeconds = 20000;//闲置多少毫秒秒关闭底栏  默认20秒
 
     private Runnable myRunnable2 = new Runnable() {
         @Override
@@ -291,6 +291,20 @@ public class VodController extends BaseController {
                 }
             }
         });
+        //增加速度恢复
+        findViewById(R.id.play_speed2).setOnClickListener(new OnClickListener() {
+            @Override
+         public void onClick(View v) {
+            try {
+             mPlayerConfig.put("sp", 1);
+             updatePlayerCfgView();
+             listener.updatePlayerCfg();
+             mControlWrapper.setSpeed(1);
+              } catch (JSONException e) {
+                e.printStackTrace();
+              }
+            }
+         });
         mPlayerSpeedBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -310,7 +324,7 @@ public class VodController extends BaseController {
                 }
             }
         });
-        // takagen99: Add long press to reset speed
+        // 增加长按速度恢复
         mPlayerSpeedBtn.setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -389,19 +403,28 @@ public class VodController extends BaseController {
 //        增加播放页面片头片尾时间重置
         findViewById(R.id.play_time_reset).setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
-                myHandle.removeCallbacks(myRunnable);
-                myHandle.postDelayed(myRunnable, myHandleSeconds);
-                try {
-                    mPlayerConfig.put("et", 0);
-                    mPlayerConfig.put("st", 0);
-                    updatePlayerCfgView();
-                    listener.updatePlayerCfg();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+         public void onClick(View v) {
+            try {
+              mPlayerConfig.put("st", 0);
+             updatePlayerCfgView();
+             listener.updatePlayerCfg();
+              } catch (JSONException e) {
+                e.printStackTrace();
+              }
             }
-        });
+         });
+        findViewById(R.id.play_time_reset2).setOnClickListener(new OnClickListener() {
+            @Override
+         public void onClick(View v) {
+            try {
+              mPlayerConfig.put("et", 0);
+             updatePlayerCfgView();
+             listener.updatePlayerCfg();
+              } catch (JSONException e) {
+                e.printStackTrace();
+              }
+            }
+         });
         mPlayerTimeStartBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -412,7 +435,7 @@ public class VodController extends BaseController {
                     int st = mPlayerConfig.getInt("st");
                     st += step;
                     //片头最大跳过时间10分钟
-                    if (st > 60 * 10)
+                    if (st > 60 * 6)
                         st = 0;
                     mPlayerConfig.put("st", st);
                     updatePlayerCfgView();
@@ -446,7 +469,7 @@ public class VodController extends BaseController {
                     int et = mPlayerConfig.getInt("et");
                     et += step;
                     //片尾最大跳过时间10分钟
-                    if (et > 60 * 10)
+                    if (et > 60 * 6)
                         et = 0;
                     mPlayerConfig.put("et", et);
                     updatePlayerCfgView();
@@ -476,9 +499,9 @@ public class VodController extends BaseController {
                 myHandle.removeCallbacks(myRunnable);
                 myHandle.postDelayed(myRunnable, myHandleSeconds);
                 int step = Hawk.get(HawkConfig.PLAY_TIME_STEP, 5);
-                step += 5;
-                if (step > 30) {
-                    step = 5;
+                step += 4;
+                if (step > 25) {
+                    step = 1;
                 }
                 Hawk.put(HawkConfig.PLAY_TIME_STEP, step);
                 updatePlayerCfgView();
